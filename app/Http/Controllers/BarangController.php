@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use App\Models\Katalog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
 use Ramsey\Uuid\Uuid;
 
@@ -60,7 +61,6 @@ class BarangController extends Controller
         $foto_file->move(public_path('img_barang'), $foto_nama);
 
         $dataBarang = [
-            // 'id' => Uuid::uuid4(),
             'nama' => $request->input('nama'),
             'jenis' => $request->input('jenis'),
             'status' => 'jual',
@@ -78,8 +78,11 @@ class BarangController extends Controller
         ];
 
         Katalog::create($dataKatalog);
-
-        Session::flash('success', 'Data berhasil ditambahkan.');
+        if ($barang) {
+            Session::flash('success', 'Data berhasil ditambahkan.');
+        } else {
+            Session::forget('success');
+        }
 
         return redirect('barangs');
     }
@@ -98,7 +101,8 @@ class BarangController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = Barang::find($id);
+        return view('barang.edit')->with('data', $data);
     }
 
     /**
@@ -106,7 +110,67 @@ class BarangController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        Session::flash('nama', $request->nama);
+        Session::flash('harga', $request->harga);
+        Session::flash('spesifikasi', $request->spesifikasi);
+        Session::flash('keterangan', $request->keterangan);
+        Session::flash('foto', $request->keterangan);
+
+        $request->validate([
+            'nama' => 'required',
+            'harga' => 'required|numeric',
+            'spesifikasi' => 'required',
+            'keterangan' => 'required'
+        ], [
+            'nama.required' => 'Nama Barang harus diisi',
+            'harga.required' => 'Harga Barang harus diisi',
+            'harga.numeric' => 'Harga Barang harus berupa angka',
+            'spesifikasi.required' => 'Spesifikasi Barang harus diisi',
+            'keterangan.required' => 'Keterangan Barang harus diisi'
+        ]);
+
+        $dataBarang = [
+            'nama' => $request->input('nama'),
+            'jenis' => $request->input('jenis'),
+            'keterangan' => $request->input('keterangan')
+        ];
+
+        if ($request->hasFile('foto')) {
+            $request->validate([
+                'foto' => 'required|mimes:png,jpg,jpeg,gif'
+            ], [
+                'foto.mimes' => 'Foto harus berekstensi JPG, JPEG, PNG, dan GIF'
+            ]);
+
+            // proses memasukkan foto baru
+            $foto_file = $request->file('foto');
+            $foto_ekstensi = $foto_file->extension();
+            $foto_nama = "IMG_" . date('ymdhis') . "." . $foto_ekstensi;
+            $foto_file->move(public_path('img_barang'), $foto_nama); // -> sudah terupload
+
+            // proses menghapus foto diganti dengan foto yang baru
+            $data_foto = Barang::where('id', $id)->first();
+            File::delete(public_path('img_barang') . '/' . $data_foto->foto);
+
+            // proses mengubah nama foto yang ada di database
+            $dataBarang['foto'] = $foto_nama;
+        }
+
+        $barang = Barang::where('id', $id)->update($dataBarang);
+
+        $dataKatalog = [
+            'spesifikasi' => $request->input('spesifikasi'),
+            'harga' => $request->input('harga')
+        ];
+
+        Katalog::where('barang_id', $id)->update($dataKatalog);
+        if ($barang) {
+            Session::flash('success', 'Data berhasil diubah.');
+        } else {
+            Session::forget('success');
+        }
+
+        return redirect('barangs');
     }
 
     /**
@@ -114,6 +178,18 @@ class BarangController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        // $data = Barang::where('id', $id)->first();
+
+        $data = Barang::find($id);
+        File::delete(public_path('img_barang' . '/' . $data->foto));
+        $data->delete();
+
+        if ($data) {
+            Session::flash('success', 'Data berhasil dihapus.');
+        } else {
+            Session::forget('success');
+        }
+
+        return redirect(route('barangs.index'));
     }
 }

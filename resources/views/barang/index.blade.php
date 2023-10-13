@@ -34,17 +34,23 @@
                                 <table id="dataTable" class="table table-bordered table-striped">
                                     <thead>
                                         <tr class="text-center">
+                                            <th>#</th>
                                             <th>Foto</th>
                                             <th>Nama</th>
                                             <th>Jenis</th>
                                             <th>Harga</th>
+                                            <th>Status Barang</th>
                                             <th width="180">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @php
+                                            $no = 1;
+                                        @endphp
                                         @foreach ($dataBarang as $barang)
-                                            <tr>
-                                                <td class="text-center">
+                                            <tr class="text-center">
+                                                <th>{{ $no++ }}</th>
+                                                <td>
                                                     @if ($barang->foto)
                                                         <img src="{{ url('img_barang') . '/' . $barang->foto }}"
                                                             style="max-width: 60px;max-height:40px">
@@ -54,11 +60,19 @@
                                                 <td>{{ $barang->jenis }}</td>
                                                 @foreach ($barang->katalogBarangs as $katalog)
                                                     <td>Rp.{{ number_format($katalog->harga, 2, ',', '.') }}</td>
+                                                    <td>{{ $katalog->status }}</td>
                                                 @endforeach
-                                                <td class="text-center">
+                                                <td>
                                                     <a href="{{ route('barangs.show', [$barang->id]) }}"
                                                         class='btn btn-info btn-sm'>Detail</a>
-                                                    <Edit href="" class='btn btn-secondary btn-sm'>Edit</a>
+                                                    <a href="{{ route('barangs.edit', [$barang->id]) }}"
+                                                        class='btn btn-secondary btn-sm'>Edit</a>
+                                                    <form class="d-inline" method="post"
+                                                        action="{{ route('barangs.destroy', [$barang->id]) }}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button class="btn btn-danger btn-sm" type="button">Hapus</button>
+                                                    </form>
                                                 </td>
                                             </tr>
                                         @endforeach

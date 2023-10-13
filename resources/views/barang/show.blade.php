@@ -75,6 +75,10 @@
                                     <p><strong>Dibuat pada :</strong>{{ $dataBarang->created_at }}</p>
                                     <p><strong>Diedit pada :</strong>{{ $dataBarang->updated_at }}</p>
                                 </div>
+                                <div class="mt-4">
+                                    <a href="{{ route('barangs.index') }}" class="btn btn-secondary">Kembali ke
+                                        Halaman Sebelumnya</a>
+                                </div>
                             </div>
                         </div>
                     </div>

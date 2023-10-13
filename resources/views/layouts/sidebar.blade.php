@@ -14,11 +14,11 @@
                 <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">Alexander Pierce</a>
+                <a href="#" class="d-block">
+                    {{ Auth::user()->name }}</a>
             </div>
         </div>
 
-        <!-- SidebarSearch Form -->
         <div class="form-inline">
             <div class="input-group" data-widget="sidebar-search">
                 <input class="form-control form-control-sidebar" type="search" placeholder="Search"
@@ -31,11 +31,15 @@
             </div>
         </div>
 
-        <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                 data-accordion="false">
-
+                <li class="nav-item">
+                    <a href="{{ route('admin') }}" class="nav-link  {{ Request::is('home-admin') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-ellipsis-h"></i>
+                        <p>Home</p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="{{ route('barangs.index') }}"
                         class="nav-link  {{ Request::is('barangs') ? 'active' : '' }}">
@@ -51,7 +55,6 @@
                 </li>
             </ul>
         </nav>
-        <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->
 </aside>

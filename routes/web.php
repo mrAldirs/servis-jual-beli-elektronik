@@ -1,8 +1,10 @@
 <?php
 
-use App\Http\Controllers\BarangController;
-use App\Http\Controllers\KatalogController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarangController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KatalogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +19,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('landing.index');
-});
+})->middleware('guest');
 
-Route::resource('/barangs', BarangController::class);
+Route::get('/login', [AuthController::class, 'index'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
+Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth');
+
+Route::middleware('auth', 'auth.admin')->group(function () {
+    Route::get('/home-admin', [HomeController::class, 'admin'])->name('home');
+    Route::resource('/barangs', BarangController::class);
+});

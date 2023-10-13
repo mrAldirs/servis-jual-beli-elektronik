@@ -52,8 +52,8 @@
                     <li><a class="nav-link scrollto" href="#contact">Kontak</a></li>
                     <li class="dropdown"><a href="#"><span>Login</span> <i class="bi bi-chevron-down"></i></a>
                         <ul>
-                            <li><a class="nav-link scrollto" href="#about">Login Pelanggan</a></li>
-                            <li><a class="nav-link scrollto" href="#team">Login Admin</a></li>
+                            <li><a class="nav-link scrollto" href="{{ route('login') }}">Login</a></li>
+                            <li><a class="nav-link scrollto" href="#team">Buat Akun</a></li>
                         </ul>
                     </li>
                 </ul>
